@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-  optionSelected: { backgroundColor: "#e91e63", borderColor: "$e91e63" },
+  optionSelected: { backgroundColor: "#e91e63", borderColor: "#e91e63" },
   optionText: { fontSize: 15, color: "#333" },
   optionTextSelected: { color: "#fff", fontWeight: "600" },
 });
