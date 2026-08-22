@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,103 +13,82 @@ import { parseCurrencyToCents } from "../../utils/currency";
 import { IngredientRepository } from "../../database/repositories/IngredientRepository";
 import { LabeledInput } from "../../components/LabeledInput";
 import { UnitSelector } from "../../components/UnitSelector";
+import { Ingredient } from "../../models/Ingredients";
+import { router, useFocusEffect } from "expo-router";
+import { IngredientCard } from "../../components/IngredientCard";
 
 export default function IngredientsScreen() {
-  const [name, setName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState<DisplayUnit>("g");
-  const [price, setPrice] = useState("");
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
-  function handleSave() {
-    const quantityNumber = parseFloat(quantity.replace(",", "."));
+  useFocusEffect(
+    useCallback(() => {
+      setIngredients(IngredientRepository.getAll());
+    }, []),
+  );
 
-    if (!name.trim()) {
-      Alert.alert("Ops", "Informe o nome do ingrediente.");
-      return;
-    }
-    if (isNaN(quantityNumber) || quantityNumber <= 0) {
-      Alert.alert("Ops", "Informe uma quantidade válida.");
-      return;
-    }
-
-    const { quantity: baseQuantity, unit: baseUnit } = toBaseUnit(
-      quantityNumber,
-      unit,
-    );
-    const priceCents = parseCurrencyToCents(price);
-
-    IngredientRepository.create({
-      name: name.trim(),
-      brand: brand.trim() || null,
-      quantity: baseQuantity,
-      unit: baseUnit,
-      priceCents,
-    });
-
-    Alert.alert("Pronto!", "Ingrediente cadastrado com sucesso.");
-    setName("");
-    setBrand("");
-    setQuantity("");
-    setPrice("");
-    setUnit("g");
+  function handleDelete(ingredient: Ingredient) {
+    Alert.alert("Excluir ingrediente", `Deseja excluir "${ingredient.name}"?`, [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          IngredientRepository.remove(ingredient.id);
+          setIngredients(IngredientRepository.getAll());
+        },
+      },
+    ]);
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Novo ingrediente</Text>
-
-      <LabeledInput
-        label="Nome"
-        placeholder="Ex: Leite condensado"
-        value={name}
-        onChangeText={setName}
+    <View style={styles.container}>
+      <FlatList
+        data={ingredients}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => (
+          <IngredientCard
+            ingredient={item}
+            onDelete={() => handleDelete(item)}
+          />
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            Nenhum ingrediente cadastrado ainda. Toque em "+" para começar.
+          </Text>
+        }
       />
 
-      <LabeledInput
-        label="Marca (opcional"
-        placeholder="Ex: Moça"
-        value={brand}
-        onChangeText={setBrand}
-      />
-
-      <LabeledInput
-        label="Quantidade comprada"
-        placeholder="Ex: 395"
-        keyboardType="decimal-pad"
-        value={quantity}
-        onChangeText={setQuantity}
-      />
-
-      <Text style={styles.label}>Unidade</Text>
-      <UnitSelector value={unit} onChange={setUnit} />
-
-      <LabeledInput
-        label="Preço pago (R$)"
-        placeholder="Ex: 7,99"
-        keyboardType="decimal-pad"
-        value={price}
-        onChangeText={setPrice}
-      />
-
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Salvar ingredientes</Text>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/new-ingredient")}
+      >
+        <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20 },
-  title: { fontSize: 22, fontWeight: "700", marginBottom: 20 },
-  label: { fontSize: 16, fontWeight: "600", marginBottom: 6 },
-  saveButton: {
-    backgroundColor: "#e91e63",
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginTop: 8,
+  list: { padding: 20, paddingBottom: 100 },
+  emptyText: {
+    textAlign: "center",
+    color: "#888",
+    marginTop: 40,
+    fontSize: 15,
   },
-  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 30,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#e91e63",
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 4,
+  },
+  fabText: { color: "#fff", fontSize: 28, fontWeight: "700", lineHeight: 30 },
 });
