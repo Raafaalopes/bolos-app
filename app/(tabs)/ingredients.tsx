@@ -49,6 +49,7 @@ export default function IngredientsScreen() {
         renderItem={({ item }) => (
           <IngredientCard
             ingredient={item}
+            onPress={() => router.push(`/new-ingredient?id=${item.id}`)}
             onDelete={() => handleDelete(item)}
           />
         )}

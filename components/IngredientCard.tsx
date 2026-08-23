@@ -1,25 +1,36 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ingredient } from "../models/Ingredients";
 import { formatCentsToCurrency } from "../utils/currency";
+import { toDisplayUnit } from "../utils/unit";
 
 interface IngredientCardProps {
   ingredient: Ingredient;
+  onPress: () => void;
   onDelete: () => void;
 }
 
-export function IngredientCard({ ingredient, onDelete }: IngredientCardProps) {
+export function IngredientCard({
+  ingredient,
+  onPress,
+  onDelete,
+}: IngredientCardProps) {
+  const { quantity, unit } = toDisplayUnit(
+    ingredient.quantity,
+    ingredient.unit,
+  );
+
   return (
     <View style={styles.card}>
-      <View style={styles.info}>
+      <TouchableOpacity style={styles.info} onPress={onPress}>
         <Text style={styles.name}>
           {ingredient.name}
           {ingredient.brand ? ` - ${ingredient.brand}` : ""}
         </Text>
         <Text style={styles.details}>
-          {ingredient.quantity} {ingredient.unit} -{" "}
-          {formatCentsToCurrency(ingredient.priceCents)}
+          {quantity}
+          {unit} - {formatCentsToCurrency(ingredient.priceCents)}
         </Text>
-      </View>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
         <Text style={styles.deleteButtonText}>Excluir</Text>
       </TouchableOpacity>

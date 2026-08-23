@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,19 +7,42 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { LabeledInput } from "../components/LabeledInput";
 import { UnitSelector } from "../components/UnitSelector";
-import { DisplayUnit, toBaseUnit } from "../utils/unit";
-import { parseCurrencyToCents } from "../utils/currency";
+import { DisplayUnit, toBaseUnit, toDisplayUnit } from "../utils/unit";
+import { formatCentsToCurrency, parseCurrencyToCents } from "../utils/currency";
 import { IngredientRepository } from "../database/repositories/IngredientRepository";
 
 export default function NewIngredientScreen() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const isEditing = !!id;
+
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState<DisplayUnit>("g");
   const [price, setPrice] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+
+    const ingredient = IngredientRepository.getById(Number(id));
+    if (!ingredient) return;
+
+    const { quantity: displayQuantity, unit: displayUnit } = toDisplayUnit(
+      ingredient.quantity,
+      ingredient.unit,
+    );
+
+    setName(ingredient.name);
+    setBrand(ingredient.brand ?? "");
+    setQuantity(String(displayQuantity));
+    setUnit(displayUnit);
+    setPrice(
+      formatCentsToCurrency(ingredient.priceCents).replace("R$", "").trim(),
+    );
+  }, [id]);
 
   function handleSave() {
     const quantityNumber = parseFloat(quantity.replace(",", "."));
@@ -39,13 +62,23 @@ export default function NewIngredientScreen() {
     );
     const priceCents = parseCurrencyToCents(price);
 
-    IngredientRepository.create({
-      name: name.trim(),
-      brand: brand.trim() || null,
-      quantity: baseQuantity,
-      unit: baseUnit,
-      priceCents,
-    });
+    if (isEditing) {
+      IngredientRepository.update(Number(id), {
+        name: name.trim(),
+        brand: brand.trim() || null,
+        quantity: baseQuantity,
+        unit: baseUnit,
+        priceCents,
+      });
+    } else {
+      IngredientRepository.create({
+        name: name.trim(),
+        brand: brand.trim() || null,
+        quantity: baseQuantity,
+        unit: baseUnit,
+        priceCents,
+      });
+    }
 
     router.back();
   }
@@ -86,7 +119,9 @@ export default function NewIngredientScreen() {
       />
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Salvar ingrediente</Text>
+        <Text style={styles.saveButtonText}>
+          {isEditing ? "Salvar alterações" : "Salvar ingrediente"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
