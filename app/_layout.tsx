@@ -15,6 +15,14 @@ export default function RootLayout() {
           title: "Novo ingrediente",
         }}
       />
+      <Stack.Screen
+        name="new-recipe"
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          title: "Nova receita",
+        }}
+      />
     </Stack>
   );
 }
