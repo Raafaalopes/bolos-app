@@ -43,7 +43,7 @@ export default function RecipesScreen() {
         renderItem={({ item }) => (
           <RecipeCard
             recipe={item}
-            onPress={() => router.push(`/new-recipe?id=${item.id}`)}
+            onPress={() => router.push(`/recipe/${item.id}`)}
             onDelete={() => handleDelete(item)}
           />
         )}

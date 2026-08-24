@@ -1,16 +1,21 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { DISPLAY_UNITS, DisplayUnit } from "../utils/unit";
 
 interface UnitSelectorProps {
   value: DisplayUnit;
   onChange: (unit: DisplayUnit) => void;
+  options?: DisplayUnit[];
 }
 
-export function UnitSelector({ value, onChange }: UnitSelectorProps) {
+export function UnitSelector({ value, onChange, options }: UnitSelectorProps) {
+  const availableOptions = DISPLAY_UNITS.filter((option) =>
+    options ? options.includes(option.value) : true,
+  );
+
   return (
     <View style={styles.container}>
-      {DISPLAY_UNITS.map((option) => {
-        const selected = option.value == value;
+      {availableOptions.map((option) => {
+        const selected = option.value === value;
         return (
           <TouchableOpacity
             key={option.value}

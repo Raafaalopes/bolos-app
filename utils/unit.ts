@@ -38,3 +38,9 @@ export function toDisplayUnit(
   }
   return { quantity, unit: baseUnit };
 }
+
+export function getCompatibleDisplayUnits(baseUnit: Unit): DisplayUnit[] {
+  if (baseUnit === "g") return ["g", "kg"];
+  if (baseUnit === "ml") return ["ml", "L"];
+  return ["unit"];
+}

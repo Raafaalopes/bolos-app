@@ -23,6 +23,15 @@ export default function RootLayout() {
           title: "Nova receita",
         }}
       />
+      <Stack.Screen
+        name="add-recipe-ingredient"
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          title: "Adicionar ingrediente",
+        }}
+      />
+      <Stack.Screen name="recipe/[id]" options={{ headerShown: true }} />
     </Stack>
   );
 }
