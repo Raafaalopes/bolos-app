@@ -20,6 +20,8 @@ import { RecipeIngredientWithDetails } from "../../models/RecipeIngredient";
 import { toDisplayUnit } from "../../utils/unit";
 import { formatCentsToCurrency } from "../../utils/currency";
 import { calculateRecipeCost } from "../../services/RecipeCostService";
+import { PricingSettingsRepository } from "../../database/repositories/PricingSettingsRepository";
+import { calculateSuggestedPrice } from "../../services/PricingService";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -36,6 +38,11 @@ export default function RecipeDetailScreen() {
   );
 
   const recipeCost = calculateRecipeCost(items);
+  const pricingSettings = PricingSettingsRepository.get();
+  const pricing = calculateSuggestedPrice(
+    recipeCost.totalCents,
+    pricingSettings,
+  );
 
   function handleRemove(item: RecipeIngredientWithDetails) {
     Alert.alert(
@@ -68,6 +75,9 @@ export default function RecipeDetailScreen() {
           <Text style={styles.costLabel}>
             Custo dos ingredientes:{" "}
             {formatCentsToCurrency(recipeCost.totalCents)}
+          </Text>
+          <Text style={styles.priceLabel}>
+            Preço sugerido: {formatCentsToCurrency(pricing.suggestedPriceCents)}
           </Text>
         </View>
         <TouchableOpacity
@@ -189,5 +199,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#e91e63",
     marginTop: 8,
+  },
+  priceLabel: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#2e7d32",
+    marginTop: 4,
   },
 });

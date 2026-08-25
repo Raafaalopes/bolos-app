@@ -32,6 +32,14 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen name="recipe/[id]" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="pricing-settings"
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          title: "Configurações de preço",
+        }}
+      />
     </Stack>
   );
 }
