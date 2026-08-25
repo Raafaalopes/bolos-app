@@ -19,6 +19,7 @@ import { Recipe } from "../../models/Recipe";
 import { RecipeIngredientWithDetails } from "../../models/RecipeIngredient";
 import { toDisplayUnit } from "../../utils/unit";
 import { formatCentsToCurrency } from "../../utils/currency";
+import { calculateRecipeCost } from "../../services/RecipeCostService";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -33,6 +34,8 @@ export default function RecipeDetailScreen() {
       setItems(RecipeIngredientRepository.getByRecipeId(recipeId));
     }, [recipeId]),
   );
+
+  const recipeCost = calculateRecipeCost(items);
 
   function handleRemove(item: RecipeIngredientWithDetails) {
     Alert.alert(
@@ -62,6 +65,10 @@ export default function RecipeDetailScreen() {
           {recipe?.description ? (
             <Text style={styles.description}>{recipe.description}</Text>
           ) : null}
+          <Text style={styles.costLabel}>
+            Custo dos ingredientes:{" "}
+            {formatCentsToCurrency(recipeCost.totalCents)}
+          </Text>
         </View>
         <TouchableOpacity
           onPress={() => router.push(`/new-recipe?id=${recipeId}`)}
@@ -79,6 +86,10 @@ export default function RecipeDetailScreen() {
             item.quantity,
             item.ingredientUnit,
           );
+          const itemCost = recipeCost.items.find(
+            (c) => c.recipeIngredientId === item.id,
+          );
+
           return (
             <View style={styles.itemCard}>
               <View style={styles.itemInfo}>
@@ -87,7 +98,8 @@ export default function RecipeDetailScreen() {
                   {item.ingredientBrand ? ` - ${item.ingredientBrand}` : ""}
                 </Text>
                 <Text style={styles.itemDetails}>
-                  {quantity} {unit}
+                  {quantity} {unit} -{" "}
+                  {itemCost ? formatCentsToCurrency(itemCost.costCents) : ""}
                 </Text>
               </View>
               <TouchableOpacity
@@ -172,4 +184,10 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   fabText: { color: "#fff", fontSize: 28, fontWeight: "700", lineHeight: 30 },
+  costLabel: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#e91e63",
+    marginTop: 8,
+  },
 });
