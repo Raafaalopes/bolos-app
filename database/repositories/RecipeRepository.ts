@@ -12,7 +12,7 @@ export const RecipeRepository = {
 
   getAll(): Recipe[] {
     const rows = db.getAllSync<any>(
-      `SELECT id, name, description, created_at
+      `SELECT id, name, description, final_price_cents, created_at
             FROM recipes
             ORDER BY created_at DESC;`,
     );
@@ -21,7 +21,7 @@ export const RecipeRepository = {
 
   getById(id: number): Recipe | null {
     const row = db.getFirstSync<any>(
-      `SELECT id, name, description, created_at
+      `SELECT id, name, description, final_price_cents, created_at
             FROM recipes
             WHERE id = ?;`,
       [id],
@@ -37,6 +37,13 @@ export const RecipeRepository = {
     ]);
   },
 
+  updateFinalPrice(id: number, finalPriceCents: number | null): void {
+    db.runSync(`UPDATE recipes SET final_price_cents = ? WHERE id = ?;`, [
+      finalPriceCents,
+      id,
+    ]);
+  },
+
   remove(id: number): void {
     db.runSync(`DELETE FROM recipes WHERE id = ?;`, [id]);
   },
@@ -47,6 +54,7 @@ function mapRowToRecipe(row: any): Recipe {
     id: row.id,
     name: row.name,
     description: row.description,
+    finalPriceCents: row.final_price_cents,
     createdAt: row.created_at,
   };
 }

@@ -22,6 +22,7 @@ import { formatCentsToCurrency } from "../../utils/currency";
 import { calculateRecipeCost } from "../../services/RecipeCostService";
 import { PricingSettingsRepository } from "../../database/repositories/PricingSettingsRepository";
 import { calculateSuggestedPrice } from "../../services/PricingService";
+import { FinalPriceEditor } from "../../components/FinalPriceEditor";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -79,6 +80,13 @@ export default function RecipeDetailScreen() {
           <Text style={styles.priceLabel}>
             Preço sugerido: {formatCentsToCurrency(pricing.suggestedPriceCents)}
           </Text>
+          <FinalPriceEditor
+            finalPriceCents={recipe?.finalPriceCents ?? null}
+            onSave={(cents) => {
+              RecipeRepository.updateFinalPrice(recipeId, cents);
+              setRecipe(RecipeRepository.getById(recipeId));
+            }}
+          />
         </View>
         <TouchableOpacity
           onPress={() => router.push(`/new-recipe?id=${recipeId}`)}

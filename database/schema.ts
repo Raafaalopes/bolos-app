@@ -18,9 +18,16 @@ export function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       description TEXT,
+      final_price_cents INTEGER,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  try {
+    db.execSync(`ALTER TABLE recipes ADD COLUMN final_price_cents INTEGER;`);
+  } catch {
+    // coluna ja existe -> ignora.
+  }
 
   db.execSync(`
     CREATE TABLE IF NOT EXISTS recipe_ingredients (
