@@ -43,20 +43,13 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.settingsButton}
-        onPress={() => router.push("/pricing-settings")}
-      >
-        <Text style={styles.settingsIcon}>⚙️</Text>
-      </TouchableOpacity>
-
       <FlatList
         data={recentRecipes}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.content}
         ListHeaderComponent={
           <>
-            <Text style={styles.greeting}>Olá, mãe! ❤️</Text>
+            <Text style={styles.greeting}>Olá, mãe!</Text>
 
             <View style={styles.summaryCard}>
               <Text style={styles.summaryTitle}>MEUS BOLOS</Text>
@@ -94,14 +87,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 20, paddingTop: 60 },
-  settingsButton: {
-    position: "absolute",
-    top: 60,
-    right: 20,
-    padding: 8,
-    zIndex: 1,
-  },
-  settingsIcon: { fontSize: 24 },
   greeting: { fontSize: 22, fontWeight: "700", marginBottom: 20 },
   summaryCard: {
     backgroundColor: "#fce4ec",

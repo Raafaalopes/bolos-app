@@ -1,12 +1,61 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
+import { colors } from "../../constants/theme";
+import { Feather } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: true }}>
-      <Tabs.Screen name="index" options={{ title: "Início" }} />
-      <Tabs.Screen name="ingredients" options={{ title: "Ingredientes" }} />
-      <Tabs.Screen name="recipes" options={{ title: "Receitas" }} />
-      <Tabs.Screen name="budgets" options={{ title: "Orçamentos" }} />
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Início",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="home" color={color} size={size} />
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              style={{ marginRight: 16 }}
+              onPress={() => router.push("/pricing-settings")}
+            >
+              <Feather name="settings" size={22} color={colors.textPrimary} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ingredients"
+        options={{
+          title: "Ingredientes",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="package" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="recipes"
+        options={{
+          title: "Receitas",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="book-open" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="budgets"
+        options={{
+          title: "Orçamentos",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="file-text" color={color} size={size} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
