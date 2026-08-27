@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { DISPLAY_UNITS, DisplayUnit } from "../utils/unit";
+import { colors, radius, spacing } from "../constants/theme";
 
 interface UnitSelectorProps {
   value: DisplayUnit;
@@ -35,15 +36,23 @@ export function UnitSelector({ value, onChange, options }: UnitSelectorProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { flexDirection: "row", gap: 8, marginBottom: 16 },
-  option: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
+  container: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
   },
-  optionSelected: { backgroundColor: "#e91e63", borderColor: "#e91e63" },
-  optionText: { fontSize: 15, color: "#333" },
-  optionTextSelected: { color: "#fff", fontWeight: "600" },
+  option: {
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.md - 2,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  optionSelected: {
+    backgroundColor: colors.accentSoft,
+    borderColor: colors.accent,
+  },
+  optionText: { fontSize: 15, color: colors.textSecondary },
+  optionTextSelected: { color: colors.accent, fontWeight: "600" },
 });

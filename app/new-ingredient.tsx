@@ -13,6 +13,8 @@ import { UnitSelector } from "../components/UnitSelector";
 import { DisplayUnit, toBaseUnit, toDisplayUnit } from "../utils/unit";
 import { formatCentsToCurrency, parseCurrencyToCents } from "../utils/currency";
 import { IngredientRepository } from "../database/repositories/IngredientRepository";
+import { Button } from "../components/Button";
+import { colors, spacing } from "../constants/theme";
 
 export default function NewIngredientScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -107,7 +109,6 @@ export default function NewIngredientScreen() {
         onChangeText={setQuantity}
       />
 
-      <Text style={styles.label}>Unidade</Text>
       <UnitSelector value={unit} onChange={setUnit} />
 
       <LabeledInput
@@ -118,25 +119,15 @@ export default function NewIngredientScreen() {
         onChangeText={setPrice}
       />
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>
-          {isEditing ? "Salvar alterações" : "Salvar ingrediente"}
-        </Text>
-      </TouchableOpacity>
+      <Button
+        label={isEditing ? "Salvar alterações" : "Salvar ingrediente"}
+        onPress={handleSave}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: 20 },
-  label: { fontSize: 16, fontWeight: "600", marginBottom: 6 },
-  saveButton: {
-    backgroundColor: "#e91e63",
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg },
 });
