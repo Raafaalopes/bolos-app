@@ -1,5 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Recipe } from "../models/Recipe";
+import { Feather } from "@expo/vector-icons";
+import { colors, radius, spacing, typography } from "../constants/theme";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -17,7 +19,7 @@ export function RecipeCard({ recipe, onPress, onDelete }: RecipeCardProps) {
         ) : null}
       </TouchableOpacity>
       <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-        <Text style={styles.deleteButtonText}>Excluir</Text>
+        <Feather name="trash-2" size={18} color={colors.danger} />
       </TouchableOpacity>
     </View>
   );
@@ -28,20 +30,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 14,
-    borderRadius: 10,
+    padding: spacing.md - 2,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "#eee",
-    marginBottom: 10,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    marginBottom: spacing.sm + 2,
   },
-  info: { flex: 1, marginRight: 10 },
-  name: { fontSize: 16, fontWeight: "600" },
-  details: { fontSize: 14, color: "#666", marginTop: 4 },
+  info: { flex: 1, marginRight: spacing.sm + 2 },
+  name: { ...typography.body, fontWeight: "600", color: colors.textPrimary },
+  details: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
   deleteButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: "#ffe5e5",
+    padding: spacing.sm + 2,
+    borderRadius: radius.sm,
+    backgroundColor: colors.dangerSoft,
   },
-  deleteButtonText: { color: "#d32f2f", fontWeight: "600" },
 });

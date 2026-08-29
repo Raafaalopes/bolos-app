@@ -11,6 +11,9 @@ import { Recipe } from "../../models/Recipe";
 import { router, useFocusEffect } from "expo-router";
 import { RecipeRepository } from "../../database/repositories/RecipeRepository";
 import { RecipeCard } from "../../components/RecipeCard";
+import { Feather } from "@expo/vector-icons";
+import { ScreenContainer } from "../../components/ScreenContainer";
+import { colors, radius, spacing, typography } from "../../constants/theme";
 
 export default function RecipesScreen() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -35,7 +38,7 @@ export default function RecipesScreen() {
     ]);
   }
   return (
-    <View style={styles.container}>
+    <ScreenContainer>
       <FlatList
         data={recipes}
         keyExtractor={(item) => String(item.id)}
@@ -49,7 +52,7 @@ export default function RecipesScreen() {
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
-            Nenhuma receita cadastrada ainda. Toque em "+" para começar.
+            Nenhuma receita cadastrada ainda.{"\n"}Toque em "+" para começar.
           </Text>
         }
       />
@@ -58,32 +61,35 @@ export default function RecipesScreen() {
         style={styles.fab}
         onPress={() => router.push("/new-recipe")}
       >
-        <Text style={styles.fabText}>+</Text>
+        <Feather name="plus" size={26} color={"#FFFFFF"} />
       </TouchableOpacity>
-    </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  list: { padding: 20, paddingBottom: 100 },
+  list: { padding: spacing.lg, paddingBottom: 100 },
   emptyText: {
+    ...typography.body,
     textAlign: "center",
-    color: "#888",
-    marginTop: 40,
-    fontSize: 15,
+    color: colors.textSecondary,
+    marginTop: spacing.xl + spacing.md,
+    lineHeight: 22,
   },
   fab: {
     position: "absolute",
-    right: 20,
-    bottom: 30,
+    right: spacing.lg,
+    bottom: spacing.lg + 6,
     width: 56,
     height: 56,
-    borderRadius: 28,
-    backgroundColor: "#e91e63",
+    borderRadius: radius.lg + 12,
+    backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
     elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
   },
-  fabText: { color: "#fff", fontSize: 28, fontWeight: "700", lineHeight: 30 },
 });

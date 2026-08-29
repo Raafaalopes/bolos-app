@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LabeledInput } from "../components/LabeledInput";
+import { Button } from "../components/Button";
+import { colors, spacing } from "../constants/theme";
 
 export default function NewRecipeScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -65,24 +67,15 @@ export default function NewRecipeScreen() {
         multiline
       />
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>
-          {isEditing ? "Salvar alterações" : "Salvar receita"}
-        </Text>
-      </TouchableOpacity>
+      <Button
+        label={isEditing ? "Salvar alterações" : "Salvar receita"}
+        onPress={handleSave}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: 20 },
-  saveButton: {
-    backgroundColor: "#e91e63",
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg },
 });
