@@ -18,6 +18,10 @@ import {
 import { Ingredient } from "../models/Ingredients";
 import { IngredientRepository } from "../database/repositories/IngredientRepository";
 import { RecipeIngredientRepository } from "../database/repositories/RecipeIngredientRepository";
+import { ScreenContainer } from "../components/ScreenContainer";
+import { Feather } from "@expo/vector-icons";
+import { colors, radius, spacing, typography } from "../constants/theme";
+import { Button } from "../components/Button";
 
 export default function AddRecipeIngredientScreen() {
   const { recipeId } = useLocalSearchParams<{ recipeId: string }>();
@@ -56,7 +60,7 @@ export default function AddRecipeIngredientScreen() {
 
   if (!selected) {
     return (
-      <View style={styles.container}>
+      <ScreenContainer>
         <Text style={styles.title}>Escolha um ingrediente</Text>
         <FlatList
           data={ingredients}
@@ -71,78 +75,101 @@ export default function AddRecipeIngredientScreen() {
                 {item.name}
                 {item.brand ? ` - ${item.brand}` : ""}
               </Text>
+              <Feather
+                name="chevron-right"
+                size={18}
+                color={colors.textSecondary}
+              />
             </TouchableOpacity>
           )}
           ListEmptyComponent={
             <Text style={styles.emptyText}>
-              Nenhum ingrediente cadastrado ainda. Cadastre um na aba
+              Nenhum ingrediente cadastrado ainda.{"\n"}Cadastre um na aba
               Ingredientes primeiro.
             </Text>
           }
         />
-      </View>
+      </ScreenContainer>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {selected.name}
-        {selected.brand ? ` - ${selected.brand}` : ""}
-      </Text>
+    <ScreenContainer>
+      <View style={styles.content}>
+        <TouchableOpacity
+          style={styles.changeLink}
+          onPress={() => setSelected(null)}
+        >
+          <Feather name="chevron-left" size={18} color={colors.accent} />
+          <Text style={styles.changeLinkText}>Trocar ingrediente</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => setSelected(null)}>
-        <Text style={styles.changeLink}>Trocar ingrediente</Text>
-      </TouchableOpacity>
+        <Text style={styles.title}>
+          {selected.name}
+          {selected.brand ? ` - ${selected.brand}` : ""}
+        </Text>
 
-      <LabeledInput
-        label="Quantidade usada nessa receita"
-        placeholder="Ex: 200"
-        keyboardType="decimal-pad"
-        value={quantity}
-        onChangeText={setQuantity}
-      />
+        <LabeledInput
+          label="Quantidade usada nessa receita"
+          placeholder="Ex: 200"
+          keyboardType="decimal-pad"
+          value={quantity}
+          onChangeText={setQuantity}
+        />
 
-      <Text style={styles.label}>Unidade</Text>
-      <UnitSelector
-        value={unit}
-        onChange={setUnit}
-        options={getCompatibleDisplayUnits(selected.unit)}
-      />
+        <UnitSelector
+          value={unit}
+          onChange={setUnit}
+          options={getCompatibleDisplayUnits(selected.unit)}
+        />
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Adicionar à receita</Text>
-      </TouchableOpacity>
-    </View>
+        <Button label="Adicionar à receita" onPress={handleSave} />
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 20, fontWeight: "700", marginBottom: 12 },
-  label: { fontSize: 16, fontWeight: "600", marginBottom: 6 },
-  list: { paddingBottom: 20 },
+  content: { padding: spacing.lg },
+  title: {
+    ...typography.sectionTitle,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+  },
+  list: { padding: spacing.lg },
   ingredientRow: {
-    padding: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#eee",
-    marginBottom: 10,
-  },
-  ingredientName: { fontSize: 16, fontWeight: "600" },
-  emptyText: {
-    textAlign: "center",
-    color: "#888",
-    marginTop: 40,
-    fontSize: 15,
-  },
-  changeLink: { color: "#e91e63", fontWeight: "600", marginBottom: 20 },
-  saveButton: {
-    backgroundColor: "#e91e63",
-    borderRadius: 8,
-    paddingVertical: 14,
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
+    justifyContent: "space-between",
+    padding: spacing.md - 2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    marginBottom: spacing.sm + 2,
   },
-  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  ingredientName: {
+    ...typography.body,
+    fontWeight: "600",
+    color: colors.textPrimary,
+  },
+  emptyText: {
+    ...typography.body,
+    textAlign: "center",
+    color: colors.textSecondary,
+    marginTop: spacing.xl,
+    lineHeight: 22,
+  },
+  changeLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.sm,
+  },
+  changeLinkText: {
+    ...typography.label,
+    color: colors.accent,
+    marginLeft: spacing.xs,
+  },
 });

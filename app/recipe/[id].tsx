@@ -23,6 +23,9 @@ import { calculateRecipeCost } from "../../services/RecipeCostService";
 import { PricingSettingsRepository } from "../../database/repositories/PricingSettingsRepository";
 import { calculateSuggestedPrice } from "../../services/PricingService";
 import { FinalPriceEditor } from "../../components/FinalPriceEditor";
+import { ScreenContainer } from "../../components/ScreenContainer";
+import { Feather } from "@expo/vector-icons";
+import { colors, radius, spacing, typography } from "../../constants/theme";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -64,48 +67,61 @@ export default function RecipeDetailScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: recipe?.name ?? "Receita" }} />
-
-      <View style={styles.header}>
-        <View style={styles.headerInfo}>
-          <Text style={styles.title}>{recipe?.name}</Text>
-          {recipe?.description ? (
-            <Text style={styles.description}>{recipe.description}</Text>
-          ) : null}
-          <Text style={styles.costLabel}>
-            Custo dos ingredientes:{" "}
-            {formatCentsToCurrency(recipeCost.totalCents)}
-          </Text>
-          <Text style={styles.priceLabel}>
-            Preço sugerido: {formatCentsToCurrency(pricing.suggestedPriceCents)}
-          </Text>
-          <FinalPriceEditor
-            finalPriceCents={recipe?.finalPriceCents ?? null}
-            onSave={(cents) => {
-              RecipeRepository.updateFinalPrice(recipeId, cents);
-              setRecipe(RecipeRepository.getById(recipeId));
-            }}
-          />
-        </View>
-        <TouchableOpacity
-          onPress={() => router.push(`/new-recipe?id=${recipeId}`)}
-        >
-          <Text style={styles.editLink}>Editar</Text>
-        </TouchableOpacity>
-      </View>
+    <ScreenContainer>
+      <Stack.Screen
+        options={{
+          title: recipe?.name ?? "Receita",
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push(`/new-recipe?id=${recipeId}`)}
+            >
+              <Feather name="edit-2" size={20} color={colors.textPrimary} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
 
       <FlatList
         data={items}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.list}
+        ListHeaderComponent={
+          <View style={styles.summaryCard}>
+            {recipe?.description ? (
+              <Text style={styles.description}>{recipe.description}</Text>
+            ) : null}
+
+            <View style={styles.summaryRow}>
+              <Text style={styles.rowLabel}>Custo dos ingredientes</Text>
+              <Text style={styles.rowValue}>
+                {formatCentsToCurrency(recipeCost.totalCents)}
+              </Text>
+            </View>
+
+            <View style={styles.summaryRow}>
+              <Text style={styles.rowLabel}>Preço sugerido</Text>
+              <Text style={styles.rowValue}>
+                {formatCentsToCurrency(pricing.suggestedPriceCents)}
+              </Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <FinalPriceEditor
+              finalPriceCents={recipe?.finalPriceCents ?? null}
+              onSave={(cents) => {
+                RecipeRepository.updateFinalPrice(recipeId, cents);
+                setRecipe(RecipeRepository.getById(recipeId));
+              }}
+            />
+
+            <Text style={styles.sectionTitle}>Ingredientes</Text>
+          </View>
+        }
         renderItem={({ item }) => {
           const { quantity, unit } = toDisplayUnit(
             item.quantity,
             item.ingredientUnit,
-          );
-          const itemCost = recipeCost.items.find(
-            (c) => c.recipeIngredientId === item.id,
           );
 
           return (
@@ -116,22 +132,21 @@ export default function RecipeDetailScreen() {
                   {item.ingredientBrand ? ` - ${item.ingredientBrand}` : ""}
                 </Text>
                 <Text style={styles.itemDetails}>
-                  {quantity} {unit} -{" "}
-                  {itemCost ? formatCentsToCurrency(itemCost.costCents) : ""}
+                  {quantity} {unit}
                 </Text>
               </View>
               <TouchableOpacity
                 style={styles.removeButton}
                 onPress={() => handleRemove(item)}
               >
-                <Text style={styles.removeButtonText}>Remover</Text>
+                <Feather name="x" size={18} color={colors.danger} />
               </TouchableOpacity>
             </View>
           );
         }}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
-            Nenhum ingrediente adicionado ainda. Toque em "+" para começar.
+            Nenhum ingrediente adicionado ainda.{"\n"}Toque em "+" para começar.
           </Text>
         }
       />
@@ -142,76 +157,97 @@ export default function RecipeDetailScreen() {
           router.push(`/add-recipe-ingredient?recipeId=${recipeId}`)
         }
       >
-        <Text style={styles.fabText}>+</Text>
+        <Feather name="plus" size={26} color="#FFFFFF" />
       </TouchableOpacity>
-    </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: {
+  list: { padding: spacing.lg, paddingBottom: 100 },
+  summaryCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  description: {
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
+  },
+  summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    alignItems: "center",
+    marginBottom: spacing.sm,
   },
-  headerInfo: { flex: 1, marginRight: 10 },
-  title: { fontSize: 20, fontWeight: "700" },
-  description: { fontSize: 14, color: "#666", marginTop: 4 },
-  editLink: { color: "#e91e63", fontWeight: "600" },
-  list: { padding: 20, paddingBottom: 100 },
+  rowLabel: { ...typography.caption, color: colors.textSecondary },
+  rowValue: {
+    ...typography.body,
+    fontWeight: "600",
+    color: colors.textPrimary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.sm,
+  },
+  sectionTitle: {
+    ...typography.sectionTitle,
+    color: colors.textPrimary,
+    marginTop: spacing.lg,
+  },
   itemCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 14,
-    borderRadius: 10,
+    padding: spacing.md - 2,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "#eee",
-    marginBottom: 10,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    marginBottom: spacing.sm + 2,
   },
-  itemInfo: { flex: 1, marginRight: 10 },
-  itemName: { fontSize: 16, fontWeight: "600" },
-  itemDetails: { fontSize: 14, color: "#666", marginTop: 4 },
+  itemInfo: { flex: 1, marginRight: spacing.sm + 2 },
+  itemName: {
+    ...typography.body,
+    fontWeight: "600",
+    color: colors.textPrimary,
+  },
+  itemDetails: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
   removeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: "#ffe5e5",
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    backgroundColor: colors.dangerSoft,
   },
-  removeButtonText: { color: "#d32f2f", fontWeight: "600" },
   emptyText: {
+    ...typography.body,
     textAlign: "center",
-    color: "#888",
-    marginTop: 40,
-    fontSize: 15,
+    color: colors.textSecondary,
+    marginTop: spacing.lg,
+    lineHeight: 22,
   },
   fab: {
     position: "absolute",
-    right: 20,
-    bottom: 30,
+    right: spacing.lg,
+    bottom: spacing.lg + 6,
     width: 56,
     height: 56,
-    borderRadius: 28,
-    backgroundColor: "#e91e63",
+    borderRadius: radius.lg + 12,
+    backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
     elevation: 4,
-  },
-  fabText: { color: "#fff", fontSize: 28, fontWeight: "700", lineHeight: 30 },
-  costLabel: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#e91e63",
-    marginTop: 8,
-  },
-  priceLabel: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#2e7d32",
-    marginTop: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
   },
 });

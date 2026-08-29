@@ -2,6 +2,9 @@ import { useState } from "react";
 import { formatCentsToCurrency, parseCurrencyToCents } from "../utils/currency";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { LabeledInput } from "./LabeledInput";
+import { Button } from "./Button";
+import { Feather } from "@expo/vector-icons";
+import { colors, spacing, typography } from "../constants/theme";
 
 interface FinalPriceEditorProps {
   finalPriceCents: number | null;
@@ -35,34 +38,41 @@ export function FinalPriceEditor({
           onChangeText={setValue}
           autoFocus
         />
-        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-          <Text style={styles.confirmButtonText}>Confirmar</Text>
-        </TouchableOpacity>
+        <Button label="Confirmar" onPress={handleConfirm} />
       </View>
     );
   }
 
   return (
     <TouchableOpacity style={styles.display} onPress={() => setEditing(true)}>
-      <Text style={styles.finalPriceLabel}>
-        Preço final:{" "}
-        {finalPriceCents
-          ? formatCentsToCurrency(finalPriceCents)
-          : "toque para definir"}
-      </Text>
+      <Text style={styles.rowLabel}>Preço final</Text>
+      <View style={styles.row}>
+        <Text
+          style={finalPriceCents ? styles.priceValue : styles.placeholderValue}
+        >
+          {finalPriceCents
+            ? formatCentsToCurrency(finalPriceCents)
+            : "Toque para definir"}
+        </Text>
+        <Feather name="edit-2" size={16} color={colors.textSecondary} />
+      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  display: { marginTop: 8 },
-  finalPriceLabel: { fontSize: 17, fontWeight: "700", color: "#1565c0" },
-  editingContainer: { marginTop: 8 },
-  confirmButton: {
-    backgroundColor: "#1565c0",
-    borderRadius: 8,
-    paddingVertical: 10,
+  display: { marginTop: spacing.sm },
+  row: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
-  confirmButtonText: { color: "#fff", fontWeight: "700" },
+  rowLabel: { ...typography.caption, color: colors.textSecondary },
+  priceValue: { ...typography.title, fontSize: 24, color: colors.accent },
+  placeholderValue: {
+    ...typography.body,
+    color: colors.textSecondary,
+    fontStyle: "italic",
+  },
+  editingContainer: { marginTop: spacing.sm },
 });
