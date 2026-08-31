@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { LabeledInput } from "../components/LabeledInput";
+import { Button } from "../components/Button";
+import { colors, spacing } from "../constants/theme";
 
 export default function PricingSettingsScreen() {
   const [multiplier, setMultiplier] = useState("");
@@ -87,22 +89,12 @@ export default function PricingSettingsScreen() {
         onChangeText={setAdditionalCost}
       />
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Salvar configurações</Text>
-      </TouchableOpacity>
+      <Button label="Salvar configurações" onPress={handleSave} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: 20 },
-  saveButton: {
-    backgroundColor: "#e91e63",
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg },
 });

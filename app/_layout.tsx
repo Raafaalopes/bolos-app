@@ -1,11 +1,19 @@
 import { Stack } from "expo-router";
 import { initDatabase } from "../database/schema";
+import { colors } from "../constants/theme";
 
 initDatabase();
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        headerStyle: { backgroundColor: colors.surface },
+        headerTintColor: colors.textPrimary,
+        headerShadowVisible: false,
+      }}
+    >
       <Stack.Screen name="(tabs)" />
       <Stack.Screen
         name="new-ingredient"

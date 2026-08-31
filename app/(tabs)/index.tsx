@@ -10,6 +10,9 @@ import {
 import { RecipeRepository } from "../../database/repositories/RecipeRepository";
 import { getRecipePricingSummary } from "../../services/RecipePricingSummary";
 import { RecentRecipeCard } from "../../components/RecentRecipeCard";
+import { ScreenContainer } from "../../components/ScreenContainer";
+import { Button } from "../../components/Button";
+import { colors, radius, spacing, typography } from "../../constants/theme";
 
 interface RecentRecipe {
   id: number;
@@ -42,7 +45,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer>
       <FlatList
         data={recentRecipes}
         keyExtractor={(item) => String(item.id)}
@@ -52,19 +55,19 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>Olá, mãe!</Text>
 
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryTitle}>MEUS BOLOS</Text>
+              <Text style={styles.summaryLabel}>MEUS BOLOS</Text>
               <Text style={styles.summaryCount}>
                 {recipeCount} receita {recipeCount === 1 ? "" : "s"} cadastrada{" "}
                 {recipeCount === 1 ? "" : "s"}
               </Text>
             </View>
 
-            <TouchableOpacity
-              style={styles.newRecipeButton}
-              onPress={() => router.push("/new-recipe")}
-            >
-              <Text style={styles.newRecipeButtonText}>Nova receita</Text>
-            </TouchableOpacity>
+            <View style={styles.newRecipeButton}>
+              <Button
+                label="Nova receita"
+                onPress={() => router.push("/new-recipe")}
+              />
+            </View>
 
             {recentRecipes.length > 0 && (
               <Text style={styles.sectionTitle}>Últimos bolos</Text>
@@ -80,35 +83,38 @@ export default function HomeScreen() {
           />
         )}
       />
-    </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: 20, paddingTop: 60 },
-  greeting: { fontSize: 22, fontWeight: "700", marginBottom: 20 },
-  summaryCard: {
-    backgroundColor: "#fce4ec",
-    borderRadius: 12,
-    padding: 20,
-    alignItems: "center",
-    marginBottom: 16,
+  content: { padding: spacing.lg },
+  greeting: {
+    ...typography.title,
+    color: colors.textPrimary,
+    marginBottom: spacing.lg,
   },
-  summaryTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#c2185b",
+  summaryCard: {
+    backgroundColor: colors.accentSoft,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  summaryLabel: {
+    ...typography.label,
+    color: colors.accent,
     letterSpacing: 1,
   },
-  summaryCount: { fontSize: 16, marginTop: 6 },
-  newRecipeButton: {
-    backgroundColor: "#e91e63",
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginBottom: 24,
+  summaryCount: {
+    ...typography.body,
+    color: colors.textPrimary,
+    marginTop: spacing.xs,
   },
-  newRecipeButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
-  sectionTitle: { fontSize: 16, fontWeight: "700", marginBottom: 12 },
+  newRecipeButton: { marginBottom: spacing.xl },
+  sectionTitle: {
+    ...typography.sectionTitle,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+  },
 });

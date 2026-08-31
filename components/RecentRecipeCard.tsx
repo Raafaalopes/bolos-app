@@ -1,5 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { formatCentsToCurrency } from "../utils/currency";
+import { Feather } from "@expo/vector-icons";
+import { colors, radius, spacing, typography } from "../constants/theme";
 
 interface RecentRecipeCardProps {
   name: string;
@@ -16,14 +18,17 @@ export function RecentRecipeCard({
 }: RecentRecipeCardProps) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Text style={styles.name}>{name}</Text>
-      <View style={styles.row}>
+      <View style={styles.info}>
+        <Text style={styles.name}>{name}</Text>
         <Text style={styles.label}>
           Custo: {formatCentsToCurrency(costCents)}
         </Text>
+      </View>
+      <View style={styles.right}>
         <Text style={styles.price}>
           {formatCentsToCurrency(displayPriceCents)}
         </Text>
+        <Feather name="chevron-right" size={18} color={colors.textSecondary} />
       </View>
     </TouchableOpacity>
   );
@@ -31,18 +36,27 @@ export function RecentRecipeCard({
 
 const styles = StyleSheet.create({
   card: {
-    padding: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#eee",
-    marginBottom: 10,
-  },
-  name: { fontSize: 16, fontWeight: "600", marginBottom: 6 },
-  row: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
+    padding: spacing.md - 2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    marginBottom: spacing.sm + 2,
   },
-  label: { fontSize: 14, color: "#666" },
-  price: { fontSize: 16, fontWeight: "700", color: "#2e7d32" },
+  info: { flex: 1 },
+  name: { ...typography.body, fontWeight: "600", color: colors.textPrimary },
+  label: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+  right: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  price: { ...typography.body, fontWeight: "700", color: colors.accent },
 });
