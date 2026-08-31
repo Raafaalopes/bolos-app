@@ -27,6 +27,20 @@
       "favicon": "./assets/favicon.png"
     },
     "scheme": "bolos-app",
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "67b55962-8288-4356-8399-35727c3e8da5"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/67b55962-8288-4356-8399-35727c3e8da5"
+    }
   }
 }
